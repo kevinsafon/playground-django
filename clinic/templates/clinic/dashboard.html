@@ -1,0 +1,106 @@
+{% extends "clinic/base.html" %}
+
+{% block title %}Clinic dashboard{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+	<div>
+		<p class="eyebrow">Daily care desk</p>
+		<h1>Clinic dashboard</h1>
+		<p class="lede">Keep client records, animal details, and upcoming care in one calm place.</p>
+	</div>
+	<div class="actions">
+		<a class="btn btn-primary" href="{% url 'client-create' %}">Add a client</a>
+		<a class="btn btn-outline-secondary" href="{% url 'appointment-list' %}">View appointments</a>
+	</div>
+</section>
+<section class="row row-cols-1 row-cols-md-3 g-3 dashboard-summary" aria-label="Clinic summary">
+	<article class="dashboard-card col">
+		<p class="eyebrow">Directory</p>
+		<h2>{{ client_count }} <span class="item-meta">clients</span></h2>
+		<a class="card-link" href="{% url 'client-list' %}">Browse clients &rarr;</a>
+	</article>
+	<article class="dashboard-card col">
+		<p class="eyebrow">Care records</p>
+		<h2>{{ animal_count }} <span class="item-meta">animals</span></h2>
+		<a class="card-link" href="{% url 'client-list' %}">Open client records &rarr;</a>
+	</article>
+	<article class="dashboard-card col">
+		<p class="eyebrow">Today</p>
+		<h2>{{ today_appointments|length }} <span class="item-meta">appointments</span></h2>
+		<a class="card-link" href="{% url 'appointment-list' %}?date={{ today_date|date:'Y-m-d' }}">Open today's schedule &rarr;</a>
+	</article>
+</section>
+<section class="dashboard-grid" aria-label="Clinic actions">
+	<article class="dashboard-card">
+		<p class="eyebrow">People</p>
+		<h2>Clients</h2>
+		<p>Find contact details and move into a client's animals or appointments.</p>
+		<a class="card-link" href="{% url 'client-list' %}">Browse clients &rarr;</a>
+	</article>
+	<article class="dashboard-card">
+		<p class="eyebrow">Care records</p>
+		<h2>Animals</h2>
+		<p>Keep each animal connected to the right client and ready for the next visit.</p>
+		<a class="card-link" href="{% url 'client-list' %}">Open client records &rarr;</a>
+	</article>
+	<article class="dashboard-card">
+		<p class="eyebrow">Schedule</p>
+		<h2>Appointments</h2>
+		<p>Review bookings, spot conflicts, and keep the day moving.</p>
+		<a class="card-link" href="{% url 'appointment-list' %}">Open schedule &rarr;</a>
+	</article>
+</section>
+<div class="row g-4 mt-2">
+	<section class="col-lg-7">
+		<div class="list-panel h-100">
+			<div class="section-heading px-3 pt-3">
+				<div>
+					<p class="eyebrow">{{ today_date|date:'l, F j' }}</p>
+					<h2>Today's appointments</h2>
+				</div>
+				<a class="btn btn-outline-secondary btn-sm" href="{% url 'appointment-list' %}?date={{ today_date|date:'Y-m-d' }}">View all</a>
+			</div>
+			{% if today_appointments %}
+			<ul class="data-list list-group list-group-flush">
+				{% for appointment in today_appointments %}
+				<li>
+					<div>
+						<a href="{% url 'appointment-detail' appointment.pk %}">{{ appointment.scheduled_for|date:'g:i A' }} &middot; {{ appointment.animal.name }}</a>
+						<div class="item-meta">{{ appointment.client.name }} &middot; {{ appointment.reason }}</div>
+					</div>
+					<span class="badge status status-scheduled">Scheduled</span>
+				</li>
+				{% endfor %}
+			</ul>
+			{% else %}
+			<p class="empty-state">No appointments scheduled for today.</p>
+			{% endif %}
+		</div>
+	</section>
+	<section class="col-lg-5">
+		<div class="list-panel h-100">
+			<div class="section-heading px-3 pt-3">
+				<div>
+					<p class="eyebrow">Next up</p>
+					<h2>Upcoming</h2>
+				</div>
+			</div>
+			{% if upcoming_appointments %}
+			<ul class="data-list list-group list-group-flush">
+				{% for appointment in upcoming_appointments %}
+				<li>
+					<div>
+						<a href="{% url 'appointment-detail' appointment.pk %}">{{ appointment.scheduled_for|date:'M j' }} &middot; {{ appointment.animal.name }}</a>
+						<div class="item-meta">{{ appointment.client.name }} &middot; {{ appointment.reason }}</div>
+					</div>
+				</li>
+				{% endfor %}
+			</ul>
+			{% else %}
+			<p class="empty-state">No upcoming appointments.</p>
+			{% endif %}
+		</div>
+	</section>
+</div>
+{% endblock %}

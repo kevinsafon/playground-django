@@ -1,0 +1,67 @@
+{% extends "clinic/base.html" %}
+
+{% block title %}{{ client_record.name }}{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">Client record</p>
+        <h1>{{ client_record.name }}</h1>
+        <p class="lede">A clear view of this client's animals and care schedule.</p>
+    </div>
+    <div class="actions">
+        <a class="btn btn-outline-secondary" href="{% url 'client-update' client_record.pk %}">Edit client</a>
+        <a class="btn btn-primary" href="{% url 'appointment-create' client_record.pk %}">Book appointment</a>
+    </div>
+</section>
+<section class="detail-panel">
+<dl class="detail-list">
+    <dt>Email</dt>
+    <dd>{{ client_record.email }}</dd>
+    <dt>Phone</dt>
+    <dd>{{ client_record.phone }}</dd>
+    <dt>Address</dt>
+    <dd>{{ client_record.address|default:"Not provided" }}</dd>
+    <dt>Notes</dt>
+    <dd>{{ client_record.notes|default:"No notes" }}</dd>
+</dl>
+<div class="section-heading">
+    <h2>Animals</h2>
+    <a class="btn btn-outline-secondary btn-sm" href="{% url 'animal-create' client_record.pk %}">Add an animal</a>
+</div>
+{% if client_record.animals.all %}
+<ul class="item-list list-group list-group-flush">
+    {% for animal in client_record.animals.all %}
+    <li>
+        <strong>{{ animal.name }}</strong> ({{ animal.species }}{% if animal.breed %}, {{ animal.breed }}{% endif %})
+        <a class="btn btn-outline-secondary btn-sm" href="{% url 'animal-update' client_record.pk animal.pk %}">Edit</a>
+    </li>
+    {% empty %}
+    <li>No animals registered.</li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No animals registered.</p>
+{% endif %}
+<div class="section-heading">
+    <h2>Appointments</h2>
+    <a class="btn btn-outline-secondary btn-sm" href="{% url 'appointment-create' client_record.pk %}">Book appointment</a>
+</div>
+{% if client_record.appointments.all %}
+<ul class="item-list list-group list-group-flush">
+    {% for appointment in client_record.appointments.all %}
+    <li>
+        <a href="{% url 'appointment-detail' appointment.pk %}">
+            {{ appointment.scheduled_for }} - {{ appointment.animal.name }} - {{ appointment.status }}
+        </a>
+    </li>
+    {% empty %}
+    <li>No appointments scheduled.</li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No appointments scheduled.</p>
+{% endif %}
+</section>
+<p><a href="{% url 'client-list' %}">Back to clients</a></p>
+{% endblock %}

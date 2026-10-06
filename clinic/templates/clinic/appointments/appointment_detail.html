@@ -1,0 +1,42 @@
+{% extends "clinic/base.html" %}
+
+{% block title %}Appointment for {{ appointment.animal.name }}{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">Care schedule</p>
+        <h1>Appointment for {{ appointment.animal.name }}</h1>
+        <p class="lede">{{ appointment.reason }}</p>
+    </div>
+    <span class="badge status status-{{ appointment.status }}">{{ appointment.get_status_display }}</span>
+</section>
+<section class="detail-panel">
+<dl class="detail-list">
+    <dt>Client</dt>
+    <dd>{{ appointment.client.name }}</dd>
+    <dt>Animal</dt>
+    <dd>{{ appointment.animal.name }} ({{ appointment.animal.species }})</dd>
+    <dt>When</dt>
+    <dd>{{ appointment.scheduled_for }}</dd>
+    <dt>Duration</dt>
+    <dd>{{ appointment.duration_minutes }} minutes</dd>
+    <dt>Reason</dt>
+    <dd>{{ appointment.reason }}</dd>
+    <dt>Status</dt>
+    <dd>{{ appointment.get_status_display }}</dd>
+    <dt>Notes</dt>
+    <dd>{{ appointment.notes|default:"No notes" }}</dd>
+</dl>
+<div class="inline-actions">
+<a class="btn btn-outline-secondary" href="{% url 'appointment-update' appointment.client.pk appointment.pk %}">Edit appointment</a>
+{% if appointment.status == "scheduled" %}
+<form method="post" action="{% url 'appointment-cancel' appointment.pk %}">
+    {% csrf_token %}
+    <button class="btn btn-outline-danger" type="submit" onclick="return confirm('Cancel this appointment?');">Cancel appointment</button>
+</form>
+{% endif %}
+</div>
+</section>
+<p><a href="{% url 'client-detail' appointment.client.pk %}">Back to client</a></p>
+{% endblock %}

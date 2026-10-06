@@ -1,0 +1,66 @@
+{% extends "clinic/base.html" %}
+
+{% block title %}Appointments{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">Care schedule</p>
+        <h1>Appointments</h1>
+        <p class="lede">Review scheduled care across the clinic.</p>
+    </div>
+</section>
+<section class="list-panel">
+<form class="search-bar row g-2" method="get">
+    <div class="col-md-5">
+        <label class="visually-hidden" for="appointment-status">Status</label>
+        <select class="form-select" id="appointment-status" name="status">
+            <option value="">All statuses</option>
+            {% for value, label in status_choices %}
+            <option value="{{ value }}"{% if selected_status == value %} selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-5">
+        <label class="visually-hidden" for="appointment-date">Date</label>
+        <input class="form-control" id="appointment-date" type="date" name="date" value="{{ selected_date }}">
+    </div>
+    <div class="col-md-2 d-grid">
+        <button class="btn btn-primary" type="submit">Filter</button>
+    </div>
+</form>
+{% if appointments %}
+<ul class="data-list list-group list-group-flush">
+    {% for appointment in appointments %}
+    <li>
+        <a href="{% url 'appointment-detail' appointment.pk %}">
+            {{ appointment.scheduled_for }} - {{ appointment.animal.name }} for {{ appointment.client.name }} - {{ appointment.reason }}
+        </a>
+        <span class="badge status status-{{ appointment.status }}">{{ appointment.status }}</span>
+    </li>
+    {% empty %}
+    <li>No appointments scheduled.</li>
+    {% endfor %}
+</ul>
+{% else %}
+<p class="empty-state">No appointments scheduled yet.</p>
+{% endif %}
+</section>
+{% if is_paginated %}
+<nav class="mt-4" aria-label="Appointment pages">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link" href="?status={{ selected_status|urlencode }}&amp;date={{ selected_date|urlencode }}&amp;page={{ page_obj.previous_page_number }}">Previous</a></li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">Previous</span></li>
+        {% endif %}
+        <li class="page-item active" aria-current="page"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+        {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link" href="?status={{ selected_status|urlencode }}&amp;date={{ selected_date|urlencode }}&amp;page={{ page_obj.next_page_number }}">Next</a></li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">Next</span></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

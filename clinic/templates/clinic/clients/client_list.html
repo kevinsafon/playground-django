@@ -1,0 +1,53 @@
+{% extends "clinic/base.html" %}
+
+{% block title %}Clients{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">People</p>
+        <h1>Clients</h1>
+        <p class="lede">Search the clinic directory and open a complete client record.</p>
+    </div>
+    <a class="btn btn-primary" href="{% url 'client-create' %}">Add a client</a>
+</section>
+<section class="list-panel">
+<form class="search-bar input-group" method="get">
+    <label for="client-search">Search</label>
+    <input id="client-search" type="search" name="q" value="{{ query }}">
+    <button class="btn btn-primary" type="submit">Search</button>
+</form>
+{% if clients %}
+<ul class="data-list list-group list-group-flush">
+    {% for client in clients %}
+    <li>
+        <div>
+            <a href="{% url 'client-detail' client.pk %}">{{ client.name }}</a>
+            <div class="item-meta">{{ client.email }} &middot; {{ client.phone }}</div>
+        </div>
+        <a class="btn btn-outline-secondary btn-sm" href="{% url 'client-update' client.pk %}">Edit</a>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p class="empty-state">No clients found. Add the first client to start the directory.</p>
+{% endif %}
+</section>
+{% if is_paginated %}
+<nav class="mt-4" aria-label="Client pages">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link" href="?q={{ query|urlencode }}&amp;page={{ page_obj.previous_page_number }}">Previous</a></li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">Previous</span></li>
+        {% endif %}
+        <li class="page-item active" aria-current="page"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+        {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link" href="?q={{ query|urlencode }}&amp;page={{ page_obj.next_page_number }}">Next</a></li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">Next</span></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

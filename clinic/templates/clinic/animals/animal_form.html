@@ -1,0 +1,21 @@
+{% extends "clinic/base.html" %}
+
+{% block title %}{% if object %}Edit animal{% else %}Add animal{% endif %}{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+    <div>
+        <p class="eyebrow">Animal record</p>
+        <h1>{% if object %}Edit animal{% else %}Add animal{% endif %}</h1>
+        <p class="lede">Client: {{ client_record.name }}</p>
+    </div>
+</div>
+<section class="form-panel">
+<form method="post">
+    {% csrf_token %}
+    {% include "clinic/includes/form_fields.html" %}
+    <button class="btn btn-primary" type="submit">Save animal</button>
+</form>
+</section>
+<p><a href="{% url 'client-detail' client_record.pk %}">Cancel</a></p>
+{% endblock %}
